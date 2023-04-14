@@ -27,26 +27,49 @@ class FloParser(Parser):
 	@_('ecrire')
 	def instruction(self, p):
 		return p[0]
+	
+	
+
+	
+	
+
 			
 	@_('ECRIRE "(" expr ")" ";"')
 	def ecrire(self, p):
 		return arbre_abstrait.Ecrire(p.expr) #p.expr = p[2]
 		
-	@_('expr "+" expr')
-	def expr(self, p):
-		return arbre_abstrait.Operation('+',p[0],p[2])
+	##@_('expr "+" expr')
+	##def expr(self, p):
+	##	return arbre_abstrait.Operation('+',p[0],p[2])
 
-	@_('expr "*" expr')
-	def expr(self, p):
-		return arbre_abstrait.Operation('*',p[0],p[2])
+	##@_('expr "*" expr')
+	##def expr(self, p):
+	##	return arbre_abstrait.Operation('*',p[0],p[2])
+
 
 	@_('"(" expr ")"')
-	def expr(self, p):
-		return p.expr #ou p[1]
+	def fact(self, p):
+		return p[1]
 		
 	@_('ENTIER')
-	def expr(self, p):
+	def fact(self, p):
 		return arbre_abstrait.Entier(p.ENTIER) #p.ENTIER = p[0]
+	
+	@_('fact')
+	def produit(self,p):
+		return p.fact
+	
+	@_('expr "+" produit')
+	def expr(self,p):
+		return arbre_abstrait.Operation('+',p[0],p[2])
+	
+	@_('produit')
+	def expr(self,p):
+		return p[0]
+	
+	@_('produit "*" fact')
+	def produit(self,p):
+		return arbre_abstrait.Operation('*',p[0],p[2])
 
 if __name__ == '__main__':
 	lexer = FloLexer()
