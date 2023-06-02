@@ -28,7 +28,33 @@ class Ecrire:
 		afficher("<ecrire>",indent)
 		self.exp.afficher(indent+1)
 		afficher("</ecrire>",indent)
-		
+
+class Lire:
+	def __init__(self,exp):
+		self.exp=exp
+	
+	def afficher(self,indent=0):
+		afficher("<lire>",indent)
+		self.exp.afficher(indent+1)
+		afficher("</lire>",indent)
+
+class Assignement:
+	def __init__(self,nom,valeur):
+		self.nom=nom
+		self.valeur=valeur
+	def afficher(self,indent=0):
+		afficher("<variable>",indent)
+		self.nom.afficher(indent+1)
+		self.valeur.afficher(indent+1)
+		afficher("</variable>",indent)
+
+class Recuperation:
+	def __init__(self,nom):
+		self.nom=nom
+	def afficher(self,indent=0):
+		afficher("<variable>")
+
+
 class Operation:
 	def __init__(self,op,exp1,exp2):
 		self.exp1 = exp1
@@ -40,6 +66,8 @@ class Operation:
 		self.exp1.afficher(indent+1)
 		self.exp2.afficher(indent+1)
 		afficher("</operation>",indent)
+
+
 class Entier:
 	def __init__(self,valeur):
 		self.valeur = valeur
