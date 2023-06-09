@@ -89,7 +89,7 @@ class SuperExpression:
 		afficher("<super expression>", indent)
 		self.expr1.afficher(indent+1)
 		self.expr2.afficher(indent+1)
-		afficher("<super expression>", indent)
+		afficher("</super expression>", indent)
 
 
 class Fonction:
@@ -101,4 +101,13 @@ class Fonction:
 		afficher('<fonction>', indent)
 		self.nom.afficher(indent+1)
 		self.expr.afficher(indent+1)
-		afficher('<fonction>', indent)
+		afficher('</fonction>', indent)
+
+class Variable:
+	def __init__(self, nom):
+		self.nom = nom
+	
+	def afficher(self, indent):
+		afficher("<variable>", indent)
+		afficher(self.nom, indent+1)
+		afficher("</variable>", indent)
