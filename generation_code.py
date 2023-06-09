@@ -157,7 +157,7 @@ def gen_operation(operation):
 		nasm_instruction(code[op], "ebx", "", "", "effectue l'opération eax" +op+"ebx et met le résultat dans eax" )
 		nasm_instruction("push",  "ebx" , "", "", "empile le résultat")
 
-def gen_comparaison(comparaison)
+def gen_comparaison(comparaison):
 	op = comparaison.op
 		
 	gen_expression(comparaison.exp1) #on calcule et empile la valeur de exp1
@@ -166,7 +166,7 @@ def gen_comparaison(comparaison)
 	nasm_instruction("pop", "ebx", "", "", "dépile la seconde operande dans ebx")
 	nasm_instruction("pop", "eax", "", "", "dépile la permière operande dans eax")
 
-	code={">":""}
+	code={"==":""}
 	
 
 
