@@ -28,11 +28,6 @@ class FloParser(Parser):
 	def instruction(self, p):
 		return p[0]
 	
-	
-
-	
-	
-
 			
 	@_('ECRIRE "(" expr ")" ";"')
 	def ecrire(self, p):
@@ -87,6 +82,32 @@ class FloParser(Parser):
 	def produit(self,p):
 		return arbre_abstrait.Operation('%',p[0],p[2])
 	
+	@_('expr "<" expr')
+	def expr(self,p):
+		return arbre_abstrait.Comparaison('<',p[0],p[2])
+	
+	@_('expr ">" expr')
+	def expr(self,p):
+		return arbre_abstrait.Comparaison('>',p[0],p[2])
+	
+	@_('expr EGAL expr')
+	def expr(self,p):
+		return arbre_abstrait.Comparaison('=',p[0],p[2])
+	
+	@_('expr INFERIEUR_OU_EGAL expr')
+	def expr(self,p):
+		return arbre_abstrait.Comparaison('<=',p[0],p[2])
+	
+	@_('expr SUPERIEUR_OU_EGAL expr')
+	def expr(self,p):
+		return arbre_abstrait.Comparaison('>=',p[0],p[2])
+	
+	@_('expr DIFFERENT expr')
+	def expr(self,p):
+		return arbre_abstrait.Comparaison('!=',p[0],p[2])
+	
+	
+	
 	@_('LIRE "(" ")"')
 	def expr(self,p):
 		return arbre_abstrait.Lire()
@@ -98,7 +119,6 @@ class FloParser(Parser):
 	@_('variable')
 	def fact(self, p):
 		return p[0]
-
 
 	@_('expr "," expr',
     'superExpression "," expr')
@@ -121,6 +141,33 @@ class FloParser(Parser):
 	@_("booleen")
 	def expr(self,p):
 		return p[0]
+	
+	
+	@_('SI "(" expr ")" "{" listeInstructions "}" condSuite')
+	def instruction(self, p):
+		conditions = [p[2]]
+		instructions = [p[5]]
+
+		a,b = p[7]
+		conditions.extend(a)
+		instructions.extend(b)
+		return arbre_abstrait.Conditionnelle(conditions,instructions)
+	
+	
+	@_('SINON_SI "(" expr ")" "{" listeInstructions "}" condSuite')
+	def condSuite(self, p):
+		a,b = p[7]
+		return ([p[2]] + a, [p[5]] + b)
+	
+
+	@_('SINON "{" listeInstructions "}" ')
+	def condSuite(self, p):
+		return ([None], [p[2]])
+
+	@_('')
+	def condSuite(self, p):
+		return ([], [])
+
 	
 
 if __name__ == '__main__':
