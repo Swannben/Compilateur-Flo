@@ -66,6 +66,19 @@ class Operation:
 		self.exp2.afficher(indent+1)
 		afficher("</operation>",indent)
 
+class Comparaison:
+	def __init__(self,op,exp1,exp2):
+		self.exp1 = exp1
+		self.op = op
+		self.exp2 = exp2
+
+	def afficher(self,indent=0):
+		afficher("<Comparaison>",indent)
+		afficher("[Comparateur:" + self.op + "]",indent+1)
+		self.exp1.afficher(indent+1)
+		self.exp2.afficher(indent+1)
+		afficher("</Comparaison>",indent)
+
 
 class Entier:
 	def __init__(self,valeur):
@@ -102,3 +115,41 @@ class Fonction:
 		self.nom.afficher(indent+1)
 		self.expr.afficher(indent+1)
 		afficher('<fonction>', indent)
+
+
+class Conditionnelle:
+	def __init__(self,expressions: list, instructions: list):
+		self.expressions = expressions
+		self.instructions = instructions
+	def afficher(self,indent=0):
+		afficher("<Conditionnelle>",indent)
+		afficher("<Si>",indent+1)
+		self.expressions[0].afficher(indent+2)
+		afficher("</Si>",indent)
+		afficher("<Alors>",indent)
+		self.instructions[0].afficher(indent+2)
+		afficher("</Alors>",indent)
+		for i in range(1,len(self.expressions)):
+			if self.expressions[i] != None:
+				afficher("<SinonSi>",indent)
+				self.expressions[i].afficher(indent+2)
+				afficher("</SinonSi>",indent)
+				afficher("<Alors>",indent)
+				self.instructions[i].afficher(indent+2)
+				afficher("</Alors>",indent)
+			else:
+				afficher("<Sinon>",indent+1)
+				self.instructions[i].afficher(indent+2)
+				afficher("</Sinon>",indent+1)
+		afficher("</Conditionnelle>",indent)
+
+
+class TantQue:
+	def __init__(self,condition,faire):
+		self.condition = condition
+		self.faire = faire
+	def afficher(self,indent=0):
+		afficher("<tantQue>",indent)
+		self.condition.afficher(indent+1)
+		self.faire.afficher(indent+1)
+		afficher("</tantQue>",indent)

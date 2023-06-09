@@ -3,18 +3,21 @@ from sly import Lexer
 
 class FloLexer(Lexer):
 	# Noms des lexèmes (sauf les litéraux). En majuscule. Ordre non important
-	tokens = { IDENTIFIANT, ENTIER, ECRIRE,INFERIEUR_OU_EGAL, LIRE, VRAI, FAUX }
+	tokens = { IDENTIFIANT, ENTIER, ECRIRE,INFERIEUR_OU_EGAL, SUPERIEUR_OU_EGAL, EGAL, DIFFERENT, LIRE, VRAI, FAUX, SI, SINON_SI, SINON }
 
 	#Les caractères litéraux sont des caractères uniques qui sont retournés tel quel quand rencontré par l'analyse lexicale. 
 	#Les litéraux sont vérifiés en dernier, après toutes les autres règles définies par des expressions régulières.
 	#Donc, si une règle commence par un de ces littérals (comme INFERIEUR_OU_EGAL), cette règle aura la priorité.
-	literals = { '+','*','(',')',";","/","%","-","=" }
+	literals = { '+','*','(',')',";","/","%","-","=","<",">","{","}" }
 	
 	# chaines contenant les caractère à ignorer. Ici espace et tabulation
 	ignore = ' \t'
 
 	# Expressions régulières correspondant au différents Lexèmes par ordre de priorité
 	INFERIEUR_OU_EGAL= r'<='
+	SUPERIEUR_OU_EGAL= r'>='
+	EGAL = r'=='
+	DIFFERENT = r'!='
 	
 	@_(r'0|[1-9][0-9]*')
 	def ENTIER(self, t):
@@ -32,6 +35,12 @@ class FloLexer(Lexer):
 	IDENTIFIANT['vrai'] = VRAI
 
 	IDENTIFIANT['faux'] = FAUX
+
+	IDENTIFIANT['si'] = SI
+
+	IDENTIFIANT['sinonsi'] = SINON_SI
+
+	IDENTIFIANT['sinon'] = SINON
 	
 	
 	#Syntaxe des commentaires à ignorer
