@@ -141,19 +141,20 @@ class FloParser(Parser):
 	@_("booleen")
 	def expr(self,p):
 		return p[0]
+		
 	
-	@_("NON booleen")
-	def booleen(self,p):
-		return arbre_abstrait.NegLogOp(p[1])
+	@_("expr ET expr")
+	def expr(self,p):
+		return arbre_abstrait.LogOp("et",p[0],p[2])	
 	
-	@_("booleen OU booleen")
-	def booleen(self,p):
+	@_("expr OU booleen")
+	def expr(self,p):
 		return arbre_abstrait.LogOp("ou",p[0],p[2])
 	
+	@_("NON booleen")
+	def expr(self,p):
+		return arbre_abstrait.NegLogOp(p[1])
 	
-	@_("booleen ET booleen")
-	def booleen(self,p):
-		return arbre_abstrait.LogOp("et",p[0],p[2])	
 	
 	@_('SI "(" expr ")" "{" listeInstructions "}" condSuite')
 	def instruction(self, p):

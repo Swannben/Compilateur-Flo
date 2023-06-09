@@ -9,7 +9,7 @@ class Programme:
 		self.listeInstructions = listeInstructions
 	def afficher(self,indent=0):
 		afficher("<programme>",indent)
-		self.listeInstructions.afficher(indent+1)
+		self.listeInstructions.afficher(indent+2)
 		afficher("</programme>",indent)
 
 class ListeInstructions:
@@ -18,7 +18,7 @@ class ListeInstructions:
 	def afficher(self,indent=0):
 		afficher("<listeInstructions>",indent)
 		for instruction in self.instructions:
-			instruction.afficher(indent+1)
+			instruction.afficher(indent+2)
 		afficher("</listeInstructions>",indent)
 			
 class Ecrire:
@@ -26,7 +26,7 @@ class Ecrire:
 		self.exp = exp
 	def afficher(self,indent=0):
 		afficher("<ecrire>",indent)
-		self.exp.afficher(indent+1)
+		self.exp.afficher(indent+2)
 		afficher("</ecrire>",indent)
 
 class Lire:
@@ -43,8 +43,8 @@ class Assignement:
 		self.valeur=valeur
 	def afficher(self,indent=0):
 		afficher("<variable>",indent)
-		self.nom.afficher(indent+1)
-		self.valeur.afficher(indent+1)
+		self.nom.afficher(indent+2)
+		self.valeur.afficher(indent+2)
 		afficher("</variable>",indent)
 
 class Recuperation:
@@ -61,9 +61,9 @@ class Operation:
 		self.exp2 = exp2
 	def afficher(self,indent=0):
 		afficher("<operation>",indent)
-		afficher(self.op,indent+1)
-		self.exp1.afficher(indent+1)
-		self.exp2.afficher(indent+1)
+		afficher(self.op,indent+2)
+		self.exp1.afficher(indent+2)
+		self.exp2.afficher(indent+2)
 		afficher("</operation>",indent)
 
 class Comparaison:
@@ -74,9 +74,9 @@ class Comparaison:
 
 	def afficher(self,indent=0):
 		afficher("<Comparaison>",indent)
-		afficher("[Comparateur : " + self.op + "]",indent+1)
-		self.exp1.afficher(indent+1)
-		self.exp2.afficher(indent+1)
+		afficher("[Comparateur : " + self.op + "]",indent+2)
+		self.exp1.afficher(indent+2)
+		self.exp2.afficher(indent+2)
 		afficher("</Comparaison>",indent)
 
 
@@ -100,9 +100,9 @@ class LogOp:
 
 	def afficher(self,indent=0):
 		afficher("<LogOp>",indent)
-		afficher("[LogOp : " + self.op + "]",indent+1)
-		self.exp1.afficher(indent+1)
-		self.exp2.afficher(indent+1)
+		afficher("[LogOp : " + self.op + "]",indent+2)
+		self.exp1.afficher(indent+2)
+		self.exp2.afficher(indent+2)
 		afficher("</LogOp>",indent)
 
 class NegLogOp:
@@ -111,8 +111,8 @@ class NegLogOp:
 
 	def afficher(self,indent=0):
 		afficher("<NegLogOp>",indent)
-		afficher("[NegLogOp : non]",indent+1)
-		self.exp.afficher(indent+1)
+		afficher("[NegLogOp : non]",indent+2)
+		self.exp.afficher(indent+2)
 		afficher("</NegLogOp>",indent)
 
 class SuperExpression:
@@ -122,8 +122,8 @@ class SuperExpression:
 
 	def afficher(self, indent=0):
 		afficher("<super expression>", indent)
-		self.expr1.afficher(indent+1)
-		self.expr2.afficher(indent+1)
+		self.expr1.afficher(indent+2)
+		self.expr2.afficher(indent+2)
 		afficher("</super expression>", indent)
 
 
@@ -134,8 +134,8 @@ class Fonction:
 
 	def afficher(self,indent=0):
 		afficher('<fonction>', indent)
-		self.nom.afficher(indent+1)
-		self.expr.afficher(indent+1)
+		self.nom.afficher(indent+2)
+		self.expr.afficher(indent+2)
 		afficher('</fonction>', indent)
 
 class Variable:
@@ -144,7 +144,7 @@ class Variable:
 	
 	def afficher(self, indent):
 		afficher("<variable>", indent)
-		afficher(self.nom, indent+1)
+		afficher(self.nom, indent+2)
 		afficher("</variable>", indent)
 
 
@@ -154,7 +154,7 @@ class Conditionnelle:
 		self.instructions = instructions
 	def afficher(self,indent=0):
 		afficher("<Conditionnelle>",indent)
-		afficher("<Si>",indent+1)
+		afficher("<Si>",indent+2)
 		self.expressions[0].afficher(indent+2)
 		afficher("</Si>",indent)
 		afficher("<Alors>",indent)
@@ -169,9 +169,9 @@ class Conditionnelle:
 				self.instructions[i].afficher(indent+2)
 				afficher("</Alors>",indent)
 			else:
-				afficher("<Sinon>",indent+1)
+				afficher("<Sinon>",indent+2)
 				self.instructions[i].afficher(indent+2)
-				afficher("</Sinon>",indent+1)
+				afficher("</Sinon>",indent+2)
 		afficher("</Conditionnelle>",indent)
 
 
@@ -181,6 +181,6 @@ class Conditionnelle:
 # 		self.faire = faire
 # 	def afficher(self,indent=0):
 # 		afficher("<tantQue>",indent)
-# 		self.condition.afficher(indent+1)
-# 		self.faire.afficher(indent+1)
+# 		self.condition.afficher(indent+2)
+# 		self.faire.afficher(indent+2)
 # 		afficher("</tantQue>",indent)
