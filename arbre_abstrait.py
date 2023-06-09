@@ -30,12 +30,11 @@ class Ecrire:
 		afficher("</ecrire>",indent)
 
 class Lire:
-	def __init__(self,exp):
-		self.exp=exp
+	def __init__(self):
+		pass
 	
 	def afficher(self,indent=0):
 		afficher("<lire>",indent)
-		self.exp.afficher(indent+1)
 		afficher("</lire>",indent)
 
 class Assignement:
@@ -73,3 +72,33 @@ class Entier:
 		self.valeur = valeur
 	def afficher(self,indent=0):
 		afficher("[Entier:"+str(self.valeur)+"]",indent)
+
+class Booleen:
+    def __init__(self,valeur):
+        self.valeur = valeur
+    def afficher (self, indent=0):
+        afficher("[Booleen : "+self.valeur+"]",indent)
+
+
+class SuperExpression:
+	def __init__(self, expr1, expr2):
+		self.expr1 = expr1
+		self.expr2 = expr2
+
+	def afficher(self, indent=0):
+		afficher("<super expression>", indent)
+		self.expr1.afficher(indent+1)
+		self.expr2.afficher(indent+1)
+		afficher("<super expression>", indent)
+
+
+class Fonction:
+	def __init__(self, nom, expr):
+		self.nom = nom
+		self.expr = expr
+
+	def afficher(self,indent=0):
+		afficher('<fonction>', indent)
+		self.nom.afficher(indent+1)
+		self.expr.afficher(indent+1)
+		afficher('<fonction>', indent)

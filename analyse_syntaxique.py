@@ -6,7 +6,7 @@ import arbre_abstrait
 class FloParser(Parser):
 	# On récupère la liste des lexèmes de l'analyse lexicale
 	tokens = FloLexer.tokens
-	debugfile = "parser.out"
+
 	# Règles gramaticales et actions associées
 
 	@_('listeInstructions')
@@ -21,12 +21,17 @@ class FloParser(Parser):
 					
 	@_('instruction listeInstructions')
 	def listeInstructions(self, p):
-		p[1].instructions.append(p[0])
+		p[1].instructions.insert(0,p[0])
 		return p[1]
 		
 	@_('ecrire')
 	def instruction(self, p):
 		return p[0]
+	
+	
+
+	
+	
 
 			
 	@_('ECRIRE "(" expr ")" ";"')
@@ -58,14 +63,14 @@ class FloParser(Parser):
 	def expr(self,p):
 		return arbre_abstrait.Operation('+',p[0],p[2])
 	
+	@_('produit')
+	def expr(self,p):
+		return p[0]
+	
 	@_('expr "-" produit')
 	def expr(self,p):
 		return arbre_abstrait.Operation('-',p[0],p[2])
-	
-	@_('produit')
-	def booleen(self,p):
-		return p[0]
-	
+
 	@_('"-" fact')
 	def produit(self,p):
 		return arbre_abstrait.Operation('*',arbre_abstrait.Entier(-1),p[1])
@@ -73,55 +78,51 @@ class FloParser(Parser):
 	@_('produit "*" fact')
 	def produit(self,p):
 		return arbre_abstrait.Operation('*',p[0],p[2])
-	
+
 	@_('produit "/" fact')
 	def produit(self,p):
 		return arbre_abstrait.Operation('/',p[0],p[2])
-	
+
 	@_('produit "%" fact')
 	def produit(self,p):
 		return arbre_abstrait.Operation('%',p[0],p[2])
 	
-
-	@_('LIRE"("")"')
-	def produit(self,p):
+	@_('LIRE "(" ")"')
+	def expr(self,p):
 		return arbre_abstrait.Lire()
 	
-
-	@_('IDENTIFIANT "=" expr ";"')
-	def instruction(self,p):
-		return arbre_abstrait.Assignement(nom=p[0],valeur=p[2])
-
 	@_('IDENTIFIANT')
 	def variable(self,p):
+		return arbre_abstrait.Variable(p[0])
+	
+	@_('variable')
+	def fact(self, p):
 		return p[0]
 
-	@_('variable')
-	def fact(self,p):
-		return arbre_abstrait.Recuperation(p[0])	
-	
 
-	
-	
+	@_('expr "," expr',
+    'superExpression "," expr')
+	def superExpression(self, p):
+		return arbre_abstrait.SuperExpression(p[0], p[2])
+
+	@_('IDENTIFIANT "(" expr ")"',
+    'IDENTIFIANT "(" superExpression ")" ')
+	def fact(self,p):
+		return arbre_abstrait.Fonction(p[0],p[2])
+
 	@_('VRAI')
 	def booleen(self,p):
-		return p[0]
+		return arbre_abstrait.Booleen(True)
 
 	@_('FAUX')
 	def booleen(self,p):
-		return p[0]
-	
-	
+		return arbre_abstrait.Booleen(False)
+    
 	@_("booleen")
 	def expr(self,p):
 		return p[0]
 	
-	@_('variable')
-	def booleen(self,p):
-		return arbre_abstrait.Recuperation(p[0])
-	
 
-	
 if __name__ == '__main__':
 	lexer = FloLexer()
 	parser = FloParser()
@@ -130,4 +131,8 @@ if __name__ == '__main__':
 	else:
 		with open(sys.argv[1],"r") as f:
 			data = f.read()
-			arbre = parser.parse(lexer.tokenize(data))
+			try:
+				arbre = parser.parse(lexer.tokenize(data))
+				arbre.afficher()
+			except EOFError:
+				exit()

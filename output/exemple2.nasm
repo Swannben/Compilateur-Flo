@@ -5,4 +5,11 @@ v$a:	resd	1
 section	.text
 global _start
 _start:
-type instruction inconnu <class 'arbre_abstrait.Assignement'>
+	mov	eax,	sinput	
+	call	readline		
+	call	atoi		
+	push	eax		
+	pop	eax		
+	call	iprintLF		
+	mov	eax,	1			 ; 1 est le code de SYS_EXIT
+	int	0x80				 ; exit
