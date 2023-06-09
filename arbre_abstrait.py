@@ -74,7 +74,7 @@ class Comparaison:
 
 	def afficher(self,indent=0):
 		afficher("<Comparaison>",indent)
-		afficher("[Comparateur:" + self.op + "]",indent+1)
+		afficher("[Comparateur : " + self.op + "]",indent+1)
 		self.exp1.afficher(indent+1)
 		self.exp2.afficher(indent+1)
 		afficher("</Comparaison>",indent)
@@ -84,14 +84,36 @@ class Entier:
 	def __init__(self,valeur):
 		self.valeur = valeur
 	def afficher(self,indent=0):
-		afficher("[Entier:"+str(self.valeur)+"]",indent)
+		afficher("[Entier : " + str(self.valeur) + "]", indent)
 
 class Booleen:
     def __init__(self,valeur):
         self.valeur = valeur
     def afficher (self, indent=0):
-        afficher("[Booleen : "+self.valeur+"]",indent)
+        afficher("[Booleen : " + str(self.valeur) + "]", indent)
 
+class LogOp:
+	def __init__(self,op,exp1,exp2):
+		self.exp1 = exp1
+		self.op = op
+		self.exp2 = exp2
+
+	def afficher(self,indent=0):
+		afficher("<LogOp>",indent)
+		afficher("[LogOp : " + self.op + "]",indent+1)
+		self.exp1.afficher(indent+1)
+		self.exp2.afficher(indent+1)
+		afficher("</LogOp>",indent)
+
+class NegLogOp:
+	def __init__(self,exp):
+		self.exp = exp
+
+	def afficher(self,indent=0):
+		afficher("<NegLogOp>",indent)
+		afficher("[NegLogOp : non]",indent+1)
+		self.exp.afficher(indent+1)
+		afficher("</NegLogOp>",indent)
 
 class SuperExpression:
 	def __init__(self, expr1, expr2):
@@ -162,4 +184,3 @@ class Conditionnelle:
 # 		self.condition.afficher(indent+1)
 # 		self.faire.afficher(indent+1)
 # 		afficher("</tantQue>",indent)
-
