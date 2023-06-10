@@ -92,7 +92,7 @@ class FloParser(Parser):
 	
 	@_('expr EGAL expr')
 	def expr(self,p):
-		return arbre_abstrait.Comparaison('=',p[0],p[2])
+		return arbre_abstrait.Comparaison('==',p[0],p[2])
 	
 	@_('expr INFERIEUR_OU_EGAL expr')
 	def expr(self,p):

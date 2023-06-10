@@ -176,12 +176,14 @@ def gen_comparaison(comparaison):
 	nasm_instruction("pop", "ebx", "", "", "dépile la seconde operande dans ebx")
 	nasm_instruction("pop", "eax", "", "", "dépile la permière operande dans eax")
 	nasm_instruction("cmp","eax","ebx","","on démarre la comparaison")
-	if op in ['='] :
+	if op in ['=='] :
 		nasm_instruction("JE","L1","", "", "si c'est vrai on saute à L1")
 		nasm_instruction("JLE","L2","", "", "si c'est faux on saute à L2")
-		nasm_instruction("L1:","push","1","", "L1")
+		nasm_instruction("L1:","","","", "L1")
+		nasm_instruction("push","1","","","")
 		nasm_instruction("JMP","L3","", "", "si c'est faux on saute à L2")
-		nasm_instruction("L2:","push","00","", "L2")
+		nasm_instruction("L2:","","","", "L2")
+		nasm_instruction("push","00","","","")
 		nasm_instruction("L3:")
 	if op =='!=' :
 		nasm_instruction("JE","L1","", "", "")
