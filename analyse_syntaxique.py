@@ -167,6 +167,11 @@ class FloParser(Parser):
 	@_('')
 	def condSuite(self, p):
 		return ([], [])
+	
+
+	@_('TANT_QUE "(" expr ")" "{" listeInstructions "}"')
+	def instruction(self,p):
+		return arbre_abstrait.TantQue(p[2], p[5])
 
 	
 
