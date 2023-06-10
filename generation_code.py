@@ -116,8 +116,12 @@ Affiche le code nasm pour calculer et empiler la valeur d'une expression
 def gen_expression(expression):
 	if type(expression) == arbre_abstrait.Operation:
 		gen_operation(expression) #on calcule et empile la valeur de l'opération
+	elif type(expression) == arbre_abstrait.Comparaison:
+		gen_comparaison(expression)
 	elif type(expression) == arbre_abstrait.Entier:
-		nasm_instruction("push", str(expression.valeur), "", "", "") #on met sur la pile la valeur entière			
+		nasm_instruction("push", str(expression.valeur), "", "", "") #on met sur la pile la valeur entière
+	elif type(expression) == arbre_abstrait.Booleen:
+		gen_booleen(expression)		
 	elif type(expression) == arbre_abstrait.Lire:
 		gen_lire(expression)
 	elif type(expression)== arbre_abstrait.Variable:
@@ -157,6 +161,12 @@ def gen_operation(operation):
 		nasm_instruction(code[op], "ebx", "", "", "effectue l'opération eax" +op+"ebx et met le résultat dans eax" )
 		nasm_instruction("push",  "ebx" , "", "", "empile le résultat")
 
+def gen_booleen(expression):
+	if (expression.valeur):
+		nasm_instruction("push","1")
+	else:
+		nasm_instruction("push","00")
+
 def gen_comparaison(comparaison):
 	op = comparaison.op
 		
@@ -165,11 +175,31 @@ def gen_comparaison(comparaison):
 	
 	nasm_instruction("pop", "ebx", "", "", "dépile la seconde operande dans ebx")
 	nasm_instruction("pop", "eax", "", "", "dépile la permière operande dans eax")
+	nasm_instruction("cmp","eax","ebx","","on démarre la comparaison")
+	if op in ['='] :
+		nasm_instruction("JE","L1","", "", "si c'est vrai on saute à L1")
+		nasm_instruction("JLE","L2","", "", "si c'est faux on saute à L2")
+		nasm_instruction("L1:","push","1","", "L1")
+		nasm_instruction("JMP","L3","", "", "si c'est faux on saute à L2")
+		nasm_instruction("L2:","push","00","", "L2")
+		nasm_instruction("L3:")
+	if op =='!=' :
+		nasm_instruction("JE","L1","", "", "")
+		nasm_instruction("JLE","L2","", "", "")
+		nasm_instruction("L1:","push","00","", "")
+		nasm_instruction("L2:","push","1","", "")
+	if op == '>' :
+		nasm_instruction("push","SETA")
+	if op == '>=' :
+		nasm_instruction("push","SETAE")
+	if op == '<' :
+		nasm_instruction("push","SETB")
+	if op == '<' :
+		nasm_instruction("push","SETBE")
+	if op == '<' :
+		nasm_instruction("push","SETB")
 
-	code={"==":"cmp"}
-	if op =='==' :
-		nasm_instruction(code[op],"eax","ebx","on démarre la comparaison")
-		nasm_instruction("push","SETE")
+
 	
 
 
