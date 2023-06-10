@@ -9,7 +9,7 @@ _start:
 	push	3		
 	pop	ebx				 ; dépile la seconde operande dans ebx
 	pop	eax				 ; dépile la permière operande dans eax
-	imul	ebx				 ; effectue l'opération eax*ebx et met le résultat dans eax
+	add	eax,	ebx			 ; effectue l'opération eax+ebx et met le résultat dans eax
 	push	eax				 ; empile le résultat
 	pop	eax		
 	call	iprintLF		

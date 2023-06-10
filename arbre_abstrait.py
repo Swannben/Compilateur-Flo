@@ -181,6 +181,45 @@ class TantQue:
 		self.faire.afficher(indent+1)
 		afficher("</tantQue>",indent)
 
+class Retourner:
+	def __init__(self, expr):
+		self.expr = expr
+	def afficher(self, indent = 0):
+		afficher("<retourner>", indent)
+		self.expr.afficher(indent+1)
+		afficher("</retourner>", indent)
 
+class Declaration:
+	def __init__(self, type, nom):
+		self.type = type
+		self.nom = nom
+	def afficher(self, indent = 0):
+		afficher("<declaration>", indent)
+		afficher("[type = " + self.type + "]", indent + 1)
+		afficher("[nom = " + self.nom + "]", indent + 1)
+		afficher("</declaration>", indent)
 
+class Affectation:
+	def __init__(self, nom, expression):
+		self.nom = nom
+		self.expression = expression
+	def afficher(self, indent = 0):
+		afficher("<affectation>",indent)
+		afficher("[nom = " + self.nom + "]", indent + 1)
+		self.expression.afficher(indent + 1)
+		afficher("</affectation>",indent)
 
+class DeclarationAffectation:
+	def __init__(self, type, nom, expression):
+		self.type = type
+		self.nom = nom
+		self.expression = expression
+	def afficher(self, indent = 0):
+		afficher ("<declaration>", indent)
+		afficher("[type = " + self.type + "]", indent + 1)
+		afficher("[nom = " + self.nom + "]", indent + 1)
+		afficher("<affectation>",indent + 1)
+		afficher("[nom = " + self.nom + "]", indent + 2)
+		self.expression.afficher(indent + 2)
+		afficher("</affectation>",indent + 1)
+		afficher ("<declaration>", indent)
