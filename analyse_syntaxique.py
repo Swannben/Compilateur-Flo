@@ -185,6 +185,26 @@ class FloParser(Parser):
 	@_('TANT_QUE "(" expr ")" "{" listeInstructions "}"')
 	def instruction(self,p):
 		return arbre_abstrait.TantQue(p[2], p[5])
+	
+	@_('RETOURNER expr ";"')
+	def instruction(self, p):
+		return arbre_abstrait.Retourner(p[1])
+	
+	@_('TYPE_ENTIER IDENTIFIANT ";"',
+    'TYPE_BOOLEEN IDENTIFIANT ";"')
+	def instruction(self, p):
+		return arbre_abstrait.Declaration(p[0], p[1])
+	
+	@_('IDENTIFIANT "=" expr ";"')
+	def instruction(self, p):
+		return arbre_abstrait.Affectation(p[0], p[2])
+	
+	@_('TYPE_ENTIER IDENTIFIANT "=" expr ";"',
+    'TYPE_BOOLEEN IDENTIFIANT "=" expr ";"')
+	def instruction(self, p):
+		return arbre_abstrait.DeclarationAffectation(p[0], p[1], p[3])
+	
+	
 
 	
 
