@@ -166,7 +166,10 @@ def gen_comparaison(comparaison):
 	nasm_instruction("pop", "ebx", "", "", "dépile la seconde operande dans ebx")
 	nasm_instruction("pop", "eax", "", "", "dépile la permière operande dans eax")
 
-	code={"==":""}
+	code={"==":"cmp"}
+	if op =='==' :
+		nasm_instruction(code[op],"eax","ebx","on démarre la comparaison")
+		nasm_instruction("push","SETE")
 	
 
 
