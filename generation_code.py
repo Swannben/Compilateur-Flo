@@ -7,6 +7,8 @@ num_etiquette_courante = -1 #Permet de donner des noms différents à toutes les
 
 afficher_table = False
 afficher_nasm = False
+global i
+i=0
 """
 Un print qui ne fonctionne que si la variable afficher_table vaut Vrai.
 (permet de choisir si on affiche le code assembleur ou la table des symboles)
@@ -80,6 +82,11 @@ Affiche le code nasm correspondant à une instruction
 def gen_instruction(instruction):
 	if type(instruction) == arbre_abstrait.Ecrire:
 		gen_ecrire(instruction)
+	
+	elif type(instruction) == arbre_abstrait.Conditionnelle:
+		gen_conditionelle(instruction)
+	elif type(instruction) == arbre_abstrait.TantQue:
+		gen_tant_que(instruction)
 	else:
 		print("type instruction inconnu",type(instruction))
 		exit(0)
@@ -91,6 +98,53 @@ def gen_ecrire(ecrire):
 	gen_expression(ecrire.exp) #on calcule et empile la valeur d'expression
 	nasm_instruction("pop", "eax", "", "", "") #on dépile la valeur d'expression sur eax
 	nasm_instruction("call", "iprintLF", "", "", "") #on envoie la valeur d'eax sur la sortie standard
+
+"""
+Affiche le code nasm correspondant à un if then
+"""
+
+def gen_conditionelle(instruction):
+	global i 
+	i+=1
+	k=i+1
+	gen_expression(instruction.expressions[0])
+	nasm_instruction("pop", "eax", "", "", "")
+	nasm_instruction("cmp","eax","1")
+	nasm_instruction("jne",'l'+str(i))
+	gen_listeInstructions(instruction.instructions[0])
+	nasm_instruction("jmp",'l'+str(k))
+	nasm_instruction("l"+str(i)+":","")
+	i+=1
+	for j in range(len(instruction.expressions)-1):
+		i+=1
+		gen_expression(instruction.expressions[j+1])
+		nasm_instruction("pop", "eax", "", "", "")
+		nasm_instruction("cmp","eax","1")
+		nasm_instruction("jne",'l'+str(i))
+		gen_listeInstructions(instruction.instructions[j+1])
+		nasm_instruction("jmp",'l'+str(k))
+		nasm_instruction("l"+str(i)+":","")
+	if (len(instruction.instructions)>len(instruction.expressions)):
+		gen_listeInstructions(instruction.instructions[-1])
+	nasm_instruction("l"+str(k)+":")
+
+"""
+Affiche le code nasm pour une boucle tant que
+"""
+
+def gen_tant_que(instruction):
+	global i
+	i+=2
+	k=i-1
+	nasm_instruction('l'+str(k)+":")
+	gen_expression(instruction.condition)
+	nasm_instruction("pop", "eax", "", "", "")
+	nasm_instruction("cmp","eax","1")
+	nasm_instruction("jne",'l'+str(i))
+	gen_listeInstructions(instruction.faire)
+	nasm_instruction("jmp",'l'+str(k))
+	nasm_instruction("l"+str(i)+":")
+
 
 """
 Affiche le code nasm pour empiler une valeur rentrée par l'utilisateur
@@ -118,6 +172,8 @@ def gen_expression(expression):
 		gen_operation(expression) #on calcule et empile la valeur de l'opération
 	elif type(expression) == arbre_abstrait.Comparaison:
 		gen_comparaison(expression)
+	elif type(expression) == arbre_abstrait.LogOp:
+		gen_logOp(expression)
 	elif type(expression) == arbre_abstrait.Entier:
 		nasm_instruction("push", str(expression.valeur), "", "", "") #on met sur la pile la valeur entière
 	elif type(expression) == arbre_abstrait.Booleen:
@@ -161,6 +217,8 @@ def gen_operation(operation):
 		nasm_instruction(code[op], "ebx", "", "", "effectue l'opération eax" +op+"ebx et met le résultat dans eax" )
 		nasm_instruction("push",  "ebx" , "", "", "empile le résultat")
 
+
+
 def gen_booleen(expression):
 	if (expression.valeur):
 		nasm_instruction("push","1")
@@ -173,35 +231,17 @@ def gen_comparaison(comparaison):
 	gen_expression(comparaison.exp1) #on calcule et empile la valeur de exp1
 	gen_expression(comparaison.exp2) #on calcule et empile la valeur de exp2
 	
+	code={'==':"sete",'!=':'setne','<':'setb','<=':'setbe','>':'seta','>=':"setae"}
+
 	nasm_instruction("pop", "ebx", "", "", "dépile la seconde operande dans ebx")
 	nasm_instruction("pop", "eax", "", "", "dépile la permière operande dans eax")
 	nasm_instruction("cmp","eax","ebx","","on démarre la comparaison")
-	if op in ['=='] :
-		nasm_instruction("JE","L1","", "", "si c'est vrai on saute à L1")
-		nasm_instruction("JLE","L2","", "", "si c'est faux on saute à L2")
-		nasm_instruction("L1:","","","", "L1")
-		nasm_instruction("push","1","","","")
-		nasm_instruction("JMP","L3","", "", "si c'est faux on saute à L2")
-		nasm_instruction("L2:","","","", "L2")
-		nasm_instruction("push","00","","","")
-		nasm_instruction("L3:")
-	if op =='!=' :
-		nasm_instruction("JE","L1","", "", "")
-		nasm_instruction("JLE","L2","", "", "")
-		nasm_instruction("L1:","push","00","", "")
-		nasm_instruction("L2:","push","1","", "")
-	if op == '>' :
-		nasm_instruction("push","SETA")
-	if op == '>=' :
-		nasm_instruction("push","SETAE")
-	if op == '<' :
-		nasm_instruction("push","SETB")
-	if op == '<' :
-		nasm_instruction("push","SETBE")
-	if op == '<' :
-		nasm_instruction("push","SETB")
+	nasm_instruction(code[op],"al","", "", "si c'est vrai on saute à L1")
+	nasm_instruction("movzx","eax","al", "", "on affecte le flag dans une variable de la bonne taille")
+	nasm_instruction("push","eax","","", "on push la variable")
 
 
+def gen_logOp(expression):
 	
 
 
