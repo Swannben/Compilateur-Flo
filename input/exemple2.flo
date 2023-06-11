@@ -1,1 +1,8 @@
-ecrire(15%2);
+entier ma_fonction() {
+    retourner 3;
+}
+
+ecrire(3+5*2);
+si(vrai){
+    ecrire(2);
+}

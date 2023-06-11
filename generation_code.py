@@ -2,6 +2,7 @@ import sys
 from analyse_lexicale import FloLexer
 from analyse_syntaxique import FloParser
 import arbre_abstrait
+import table_des_symboles
 
 num_etiquette_courante = -1 #Permet de donner des noms différents à toutes les étiquettes (en les appelant e0, e1,e2,...)
 
@@ -9,6 +10,7 @@ afficher_table = False
 afficher_nasm = False
 global i
 i=0
+global  listeSymbole
 
 
 
@@ -18,6 +20,9 @@ class WrongTypeException(Exception):
 		self.message="error type: right type is "+rightType
 		super().__init__(self.message)
 
+class UndefinedFunctionError():
+	def __init__(self):
+		super().__init__("you tried calling a function that wasnt defined")
 
 """
 Un print qui ne fonctionne que si la variable afficher_table vaut Vrai.
@@ -75,6 +80,7 @@ def gen_programme(programme):
 	printifm('section\t.text')
 	printifm('global _start')
 	printifm('_start:')
+	gen_listeSymbole(programme.listeFonctions)
 	gen_listeInstructions(programme.listeInstructions)
 	nasm_instruction("mov", "eax", "1", "", "1 est le code de SYS_EXIT") 
 	nasm_instruction("int", "0x80", "", "", "exit") 
@@ -86,20 +92,44 @@ def gen_listeInstructions(listeInstructions):
 	for instruction in listeInstructions.instructions:
 		gen_instruction(instruction)
 
+def gen_listeSymbole(listeFonction):
+	global listeSymbole
+	listeSymbole= table_des_symboles.ListSymbole()
+	for fonction in listeFonction.fonctions:
+		gen_defFonction(fonction)
+
+def gen_defFonction(fonction):
+	global listeSymbole
+	listeSymbole.addSymbole(fonction.nom,fonction.type)
+	nasm_instruction("_"+fonction.nom+":")
+	gen_listeInstructions(fonction.listeInstructions)
 """
 Affiche le code nasm correspondant à une instruction
 """
 def gen_instruction(instruction):
 	if type(instruction) == arbre_abstrait.Ecrire:
 		gen_ecrire(instruction)
-	
+	if type(instruction) == arbre_abstrait.Retourner:
+		gen_retour(instruction)
 	elif type(instruction) == arbre_abstrait.Conditionnelle:
 		gen_conditionelle(instruction)
 	elif type(instruction) == arbre_abstrait.TantQue:
 		gen_tant_que(instruction)
+	elif type(instruction) == arbre_abstrait.Fonction:
+		gen_fonctionInstruction(instruction)
 	else:
 		print("type instruction inconnu",type(instruction))
 		exit(0)
+
+
+def gen_fonctionInstruction(instruction):
+	global listeSymbole
+	func = listeSymbole.get(instruction.name)
+	if func!=None:
+		nasm_instruction("call", "_"+instruction.name)
+	else:
+		raise UndefinedFunctionError
+
 
 """
 Affiche le code nasm correspondant au fait d'envoyer la valeur entière d'une expression sur la sortie standard
@@ -158,6 +188,10 @@ def gen_tant_que(instruction):
 	nasm_instruction("jmp",'l'+str(k))
 	nasm_instruction("l"+str(i)+":")
 
+def gen_retour(instruction):
+	gen_expression(instruction.expr)
+	nasm_instruction("pop","eax")
+	nasm_instruction("ret")
 
 """
 Affiche le code nasm pour empiler une valeur rentrée par l'utilisateur
@@ -184,6 +218,8 @@ def gen_expression(expression):
 	if type(expression) == arbre_abstrait.Operation:
 		gen_operation(expression) #on calcule et empile la valeur de l'opération
 		return "entier"
+	elif type(expression) ==arbre_abstrait.Fonction:
+		return gen_fonction(expression)
 	elif type(expression) == arbre_abstrait.Comparaison:
 		gen_comparaison(expression)
 		return "booleen"
@@ -207,7 +243,6 @@ def gen_expression(expression):
 	else:
 		print("type d'expression inconnu",type(expression))
 		exit(0)
-
 
 """
 Affiche le code nasm pour calculer l'opération et la mettre en haut de la pile
@@ -285,6 +320,16 @@ def gen_negLogOp(expression):
 	nasm_instruction("pop", "eax", "", "", "dépile la permière operande dans eax")
 	nasm_instruction("xor","eax","1","","on démarre l'operation")
 	nasm_instruction("push","eax","","", "on push la variable")
+
+def gen_fonction(expression):
+	global listeSymbole
+	func = listeSymbole.get(expression.name)
+	if func!=None:
+		nasm_instruction("call", "_"+expression.name)
+		nasm_instruction("push","eax")
+		return func.type
+	else:
+		raise UndefinedFunctionError
 
 if __name__ == "__main__":
 	afficher_nasm = True

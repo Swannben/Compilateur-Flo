@@ -1,5 +1,6 @@
-entier ma_fonction(entier a) {
-    ecrire(a);
+entier ma_fonction() {
+    ecrire(5)
+    retourner 3;
 }
 
 ecrire(3+5*2);
