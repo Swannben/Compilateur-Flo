@@ -1,5 +1,5 @@
 
-ecrire(1);
-tantque(vrai){
+ecrire(3+5*2);
+si(5){
     ecrire(2);
 }

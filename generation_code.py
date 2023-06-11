@@ -9,6 +9,16 @@ afficher_table = False
 afficher_nasm = False
 global i
 i=0
+
+
+
+class WrongTypeException(Exception):
+	def __init__(self,rightType):
+		self.rightType=rightType
+		self.message="error type: right type is "+rightType
+		super().__init__(self.message)
+
+
 """
 Un print qui ne fonctionne que si la variable afficher_table vaut Vrai.
 (permet de choisir si on affiche le code assembleur ou la table des symboles)
@@ -107,7 +117,8 @@ def gen_conditionelle(instruction):
 	global i 
 	i+=1
 	k=i+1
-	gen_expression(instruction.expressions[0])
+	if gen_expression(instruction.expressions[0])!="booleen":
+		raise WrongTypeException("booleen")
 	nasm_instruction("pop", "eax", "", "", "")
 	nasm_instruction("cmp","eax","1")
 	nasm_instruction("jne",'l'+str(i))
@@ -117,7 +128,8 @@ def gen_conditionelle(instruction):
 	i+=1
 	for j in range(len(instruction.expressions)-1):
 		i+=1
-		gen_expression(instruction.expressions[j+1])
+		if gen_expression(instruction.expressions[j+1])!="booleen":
+			raise WrongTypeException("booleen")
 		nasm_instruction("pop", "eax", "", "", "")
 		nasm_instruction("cmp","eax","1")
 		nasm_instruction("jne",'l'+str(i))
@@ -137,7 +149,8 @@ def gen_tant_que(instruction):
 	i+=2
 	k=i-1
 	nasm_instruction('l'+str(k)+":")
-	gen_expression(instruction.condition)
+	if gen_expression(instruction.condition)!="booleen":
+		raise WrongTypeException("booleen")
 	nasm_instruction("pop", "eax", "", "", "")
 	nasm_instruction("cmp","eax","1")
 	nasm_instruction("jne",'l'+str(i))
@@ -170,18 +183,27 @@ Affiche le code nasm pour calculer et empiler la valeur d'une expression
 def gen_expression(expression):
 	if type(expression) == arbre_abstrait.Operation:
 		gen_operation(expression) #on calcule et empile la valeur de l'opération
+		return "entier"
 	elif type(expression) == arbre_abstrait.Comparaison:
 		gen_comparaison(expression)
+		return "booleen"
 	elif type(expression) == arbre_abstrait.LogOp:
 		gen_logOp(expression)
+		return "booleen"
+	elif type(expression) == arbre_abstrait.NegLogOp:
+		gen_negLogOp(expression)
+		return "booleen"
 	elif type(expression) == arbre_abstrait.Entier:
 		nasm_instruction("push", str(expression.valeur), "", "", "") #on met sur la pile la valeur entière
+		return "entier"
 	elif type(expression) == arbre_abstrait.Booleen:
 		gen_booleen(expression)		
+		return "booleen"
 	elif type(expression) == arbre_abstrait.Lire:
 		gen_lire(expression)
+		return "entier"
 	elif type(expression)== arbre_abstrait.Variable:
-		gen_variable(expression)
+		return gen_variable(expression)
 	else:
 		print("type d'expression inconnu",type(expression))
 		exit(0)
@@ -193,8 +215,8 @@ Affiche le code nasm pour calculer l'opération et la mettre en haut de la pile
 def gen_operation(operation):
 	op = operation.op
 		
-	gen_expression(operation.exp1) #on calcule et empile la valeur de exp1
-	gen_expression(operation.exp2) #on calcule et empile la valeur de exp2
+	if gen_expression(operation.exp1)!="entier" or gen_expression(operation.exp2)!="entier": #on calcule et empile la valeur de exp1 et exp2
+		raise WrongTypeException("entier")
 	
 	nasm_instruction("pop", "ebx", "", "", "dépile la seconde operande dans ebx")
 	nasm_instruction("pop", "eax", "", "", "dépile la permière operande dans eax")
@@ -227,33 +249,42 @@ def gen_booleen(expression):
 
 def gen_comparaison(comparaison):
 	op = comparaison.op
-		
-	gen_expression(comparaison.exp1) #on calcule et empile la valeur de exp1
-	gen_expression(comparaison.exp2) #on calcule et empile la valeur de exp2
+	if gen_expression(comparaison.exp1)!="entier" or gen_expression(comparaison.exp2)!="entier": #on calcule et empile la valeur de exp1 et exp2
+		raise WrongTypeException("entier")
+	 #on calcule et empile la valeur de exp2
 	
 	code={'==':"sete",'!=':'setne','<':'setb','<=':'setbe','>':'seta','>=':"setae"}
 
 	nasm_instruction("pop", "ebx", "", "", "dépile la seconde operande dans ebx")
 	nasm_instruction("pop", "eax", "", "", "dépile la permière operande dans eax")
 	nasm_instruction("cmp","eax","ebx","","on démarre la comparaison")
-	nasm_instruction(code[op],"al","", "", "si c'est vrai on saute à L1")
+	nasm_instruction(code[op],"al","", "", "si c'est vrai on affecte le résultat à al")
 	nasm_instruction("movzx","eax","al", "", "on affecte le flag dans une variable de la bonne taille")
 	nasm_instruction("push","eax","","", "on push la variable")
 
 
 def gen_logOp(expression):
-	op = operation.op
+	op = expression.op
 		
-	gen_expression(operation.exp1) #on calcule et empile la valeur de exp1
-	gen_expression(operation.exp2) #on calcule et empile la valeur de exp2
+	if gen_expression(expression.exp1)!="booleen" or gen_expression(expression.exp2)!="booleen": #on calcule et empile la valeur de exp1 et exp2
+		raise WrongTypeException("booleen")
+		
 	
+
+	code={'et':'and','ou':'or'}
+
 	nasm_instruction("pop", "ebx", "", "", "dépile la seconde operande dans ebx")
 	nasm_instruction("pop", "eax", "", "", "dépile la permière operande dans eax")
+	nasm_instruction(code[op],"eax","ebx","","on démarre l'operation")
+	nasm_instruction("push","eax","","", "on push la variable")
 
-	code={''}
-	
-	
-
+def gen_negLogOp(expression):
+		
+	if gen_expression(expression.exp)!="booleen": #on calcule et empile la valeur de exp1
+		raise WrongTypeException("booleen")
+	nasm_instruction("pop", "eax", "", "", "dépile la permière operande dans eax")
+	nasm_instruction("xor","eax","1","","on démarre l'operation")
+	nasm_instruction("push","eax","","", "on push la variable")
 
 if __name__ == "__main__":
 	afficher_nasm = True
@@ -273,3 +304,4 @@ if __name__ == "__main__":
 			gen_programme(arbre)
 		except EOFError:
 			exit()
+
