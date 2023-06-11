@@ -1,1 +1,5 @@
-ecrire(2*3);
+
+ecrire(3+5*2);
+si(5){
+    ecrire(2);
+}

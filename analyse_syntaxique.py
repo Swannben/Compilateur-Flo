@@ -17,6 +17,7 @@ class FloParser(Parser):
 		('left', '*', '/', '%'),
 )
 
+
 	# Règles gramaticales et actions associées
 
 	@_('listeFonctions listeInstructions')
@@ -113,7 +114,7 @@ class FloParser(Parser):
 	
 	@_('expr EGAL expr')
 	def expr(self,p):
-		return arbre_abstrait.Comparaison('=',p[0],p[2])
+		return arbre_abstrait.Comparaison('==',p[0],p[2])
 	
 	@_('expr INFERIEUR_OU_EGAL expr')
 	def expr(self,p):
@@ -204,13 +205,14 @@ class FloParser(Parser):
 	
 	@_('SI "(" expr ")" "{" listeInstructions "}" condSuite')
 	def instruction(self, p):
-		conditions = [p[2]]
+		condition = [p[2]]
 		instructions = [p[5]]
 
 		a,b = p[7]
-		conditions.extend(a)
+		
+		condition.extend(a)
 		instructions.extend(b)
-		return arbre_abstrait.Conditionnelle(conditions,instructions)
+		return arbre_abstrait.Conditionnelle(condition,instructions)
 	
 	
 	@_('SINON_SI "(" expr ")" "{" listeInstructions "}" condSuite')
@@ -221,7 +223,7 @@ class FloParser(Parser):
 
 	@_('SINON "{" listeInstructions "}" ')
 	def condSuite(self, p):
-		return ([None], [p[2]])
+		return ([], [p[2]])
 
 	@_('')
 	def condSuite(self, p):
