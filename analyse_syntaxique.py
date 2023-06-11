@@ -173,10 +173,14 @@ class FloParser(Parser):
 	def fonction(self, p):
 		return arbre_abstrait.DeclarationFonction(p[0], p[1], arbre_abstrait.ListeParametres(), p[6])
 
-	@_('IDENTIFIANT "(" expr ")"',
-    'IDENTIFIANT "(" superExpression ")" ')
+	@_('IDENTIFIANT "(" expr ")" ";"',
+    'IDENTIFIANT "(" superExpression ")" ";" ')
 	def fact(self,p):
 		return arbre_abstrait.Fonction(p[0],p[2])
+	
+	@_('IDENTIFIANT "(" ")" ";" ')
+	def fact(self, p):
+		return arbre_abstrait.Fonction(p[0], None)
 
 	@_('VRAI')
 	def booleen(self,p):

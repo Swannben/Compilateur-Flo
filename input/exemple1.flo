@@ -1,5 +1,8 @@
+entier ma_fonction(entier a) {
+    ecrire(a);
+}
 
 ecrire(3+5*2);
-si(5){
+si(vrai){
     ecrire(2);
 }

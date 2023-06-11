@@ -18,4 +18,15 @@ _start:
 	push	eax				 ; empile le résultat
 	pop	eax		
 	call	iprintLF		
-	push	5		
+	push	1		
+	pop	eax		
+	cmp	eax,	1	
+	jne	l1		
+	push	2		
+	pop	eax		
+	call	iprintLF		
+	jmp	l2		
+	l1:			
+	l2:			
+	mov	eax,	1			 ; 1 est le code de SYS_EXIT
+	int	0x80				 ; exit

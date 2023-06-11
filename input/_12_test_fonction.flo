@@ -7,6 +7,7 @@ entier ma_fonction2(entier b, entier c) {
     retourner(b);
 }
 
+
 ecrire(1);
 
 
