@@ -7,6 +7,16 @@ class FloParser(Parser):
 	# On récupère la liste des lexèmes de l'analyse lexicale
 	tokens = FloLexer.tokens
 
+	precedence = (  
+            ('left', 'ET'),
+            ('left','OU'),
+            ('right', 'NON'),
+            ('right', 'EGAL'),
+            ('left', '<', '>', 'INFERIEUR_OU_EGAL', 'SUPERIEUR_OU_EGAL', 'DIFFERENT'),
+            ('left', '+', '-'),
+            ('left', '*', '/', '%'),
+    )
+
 	# Règles gramaticales et actions associées
 
 	@_('listeInstructions')
