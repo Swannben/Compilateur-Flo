@@ -8,20 +8,32 @@ class FloParser(Parser):
 	tokens = FloLexer.tokens
 
 	precedence = (  
-            ('left', 'ET'),
-            ('left','OU'),
-            ('right', 'NON'),
-            ('right', 'EGAL'),
-            ('left', '<', '>', 'INFERIEUR_OU_EGAL', 'SUPERIEUR_OU_EGAL', 'DIFFERENT'),
-            ('left', '+', '-'),
-            ('left', '*', '/', '%'),
-    )
+		('left', 'ET'),
+		('left','OU'),
+		('right', 'NON'),
+		('right', 'EGAL'),
+		('left', '<', '>', 'INFERIEUR_OU_EGAL', 'SUPERIEUR_OU_EGAL', 'DIFFERENT'),
+		('left', '+', '-'),
+		('left', '*', '/', '%'),
+)
+
 
 	# Règles gramaticales et actions associées
 
-	@_('listeInstructions')
+	@_('listeFonctions listeInstructions')
 	def prog(self, p):
-		return arbre_abstrait.Programme(p[0])
+		return arbre_abstrait.Programme(p[0], p[1])
+	
+	@_('fonction')
+	def listeFonctions(self, p):
+		l = arbre_abstrait.ListeFonctions()
+		l.fonctions.append(p[0])
+		return l
+
+	@_('fonction listeFonctions')
+	def listeFonctions(self, p):
+		p[1].fonctions.insert(0, p[0])
+		return p[1]
 
 	@_('instruction')
 	def listeInstructions(self, p):
@@ -33,7 +45,7 @@ class FloParser(Parser):
 	def listeInstructions(self, p):
 		p[1].instructions.insert(0,p[0])
 		return p[1]
-		
+
 	@_('ecrire')
 	def instruction(self, p):
 		return p[0]
@@ -134,6 +146,32 @@ class FloParser(Parser):
     'superExpression "," expr')
 	def superExpression(self, p):
 		return arbre_abstrait.SuperExpression(p[0], p[2])
+	
+	@_('TYPE_ENTIER expr',
+    'TYPE_BOOLEEN expr')
+	def parametre(self, p):
+		return arbre_abstrait.Parametre(p[0], p[1])
+	
+	@_('parametre')
+	def listeParametres(self, p):
+		l = arbre_abstrait.ListeParametres()
+		l.parametres.append(p[0])
+		return l
+
+	@_('parametre listeParametres')
+	def listeParametres(self, p):
+		p[1].parametres.insert(0, p[0])
+		return p[1]
+	
+	@_('TYPE_ENTIER IDENTIFIANT "(" listeParametres ")" "{" listeInstructions "}"',
+    'TYPE_BOOLEEN IDENTIFIANT "(" listeParametres ")" "{" listeInstructions "}"')
+	def fonction(self, p):
+		return arbre_abstrait.DeclarationFonction(p[0], p[1], p[3], p[6])
+
+	@_('TYPE_ENTIER IDENTIFIANT "(" ")" "{" listeInstructions "}"',
+    'TYPE_BOOLEEN IDENTIFIANT "(" ")" "{" listeInstructions "}"')
+	def fonction(self, p):
+		return arbre_abstrait.DeclarationFonction(p[0], p[1], arbre_abstrait.ListeParametres(), p[6])
 
 	@_('IDENTIFIANT "(" expr ")"',
     'IDENTIFIANT "(" superExpression ")" ')
@@ -152,7 +190,6 @@ class FloParser(Parser):
 	def expr(self,p):
 		return p[0]
 		
-	
 	@_("expr ET expr")
 	def expr(self,p):
 		return arbre_abstrait.LogOp("et",p[0],p[2])	

@@ -5,10 +5,12 @@ def afficher(s,indent=0):
 	print(" "*indent+s)
 	
 class Programme:
-	def __init__(self,listeInstructions):
+	def __init__(self, listeFonctions, listeInstructions):
+		self.listeFonctions = listeFonctions
 		self.listeInstructions = listeInstructions
 	def afficher(self,indent=0):
 		afficher("<programme>",indent)
+		self.listeFonctions.afficher(indent+2)
 		self.listeInstructions.afficher(indent+2)
 		afficher("</programme>",indent)
 
@@ -20,6 +22,61 @@ class ListeInstructions:
 		for instruction in self.instructions:
 			instruction.afficher(indent+2)
 		afficher("</listeInstructions>",indent)
+
+class ListeFonctions:
+	def __init__(self):
+		self.fonctions = []
+	def afficher(self, indent=0):
+		afficher("<listeFonctions>", indent)
+		for fonction in self.fonctions:
+			if fonction != None:
+				fonction.afficher(indent+2)
+		afficher("</listeFonctions>", indent)
+
+class DeclarationFonction:
+	def __init__(self, type, nom, listeParametres, listeInstructions):
+		self.type = type
+		self.nom = nom
+		self.listeParametres = listeParametres
+		self.listeInstructions = listeInstructions
+	def afficher(self, indent = 0):
+		afficher("<fonction>", indent)
+		self.type.afficher(indent+2)
+		afficher("[nom :" + self.nom + "]", indent+2)
+		self.listeParametres.afficher(indent+2)
+		self.listeParametres.afficher(indent+2)
+		afficher("</fonction>", indent)
+
+class Fonction:
+	def __init__(self,nom,expr):
+		self.nom = nom
+		self.expr = expr
+	def afficher(self, indent = 0):
+		afficher("<fontion>", indent)
+		afficher("[nom :" + self.nom + "]", indent+2)
+		self.expr.afficher(indent+2)
+		afficher("</fontion>", indent)
+
+class ListeParametres:
+	def __init__(self):
+		self.parametres = []
+	def afficher(self, indent = 0):
+		afficher("<listeParametres>", indent)
+		for parametre in self.parametres:
+			if parametre != None:
+				parametre.afficher(indent+2)
+		afficher("</listeParametres>", indent)
+	
+class Parametre:
+	def __init__(self, type, variable):
+		self.type = type
+		self.variable = variable
+	def afficher(self, indent = 0):
+		afficher("<parametre>", indent)
+		self.type.afficher(indent+1)
+		self.variable.afficher(indent+1)
+		afficher("</parametre>", indent)
+
 			
 class Ecrire:
 	def __init__(self,exp):
@@ -132,7 +189,7 @@ class Fonction:
 
 	def afficher(self,indent=0):
 		afficher('<fonction>', indent)
-		self.nom.afficher(indent+2)
+		afficher("[nom :" + self.nom + "]", indent+2)
 		self.expr.afficher(indent+2)
 		afficher('</fonction>', indent)
 
