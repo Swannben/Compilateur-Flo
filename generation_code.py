@@ -242,6 +242,16 @@ def gen_comparaison(comparaison):
 
 
 def gen_logOp(expression):
+	op = operation.op
+		
+	gen_expression(operation.exp1) #on calcule et empile la valeur de exp1
+	gen_expression(operation.exp2) #on calcule et empile la valeur de exp2
+	
+	nasm_instruction("pop", "ebx", "", "", "dépile la seconde operande dans ebx")
+	nasm_instruction("pop", "eax", "", "", "dépile la permière operande dans eax")
+
+	code={''}
+	
 	
 
 
