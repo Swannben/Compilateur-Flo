@@ -1,1 +1,5 @@
-ecrire(2*3);
+
+ecrire(1);
+tantque(vrai){
+    ecrire(2);
+}
