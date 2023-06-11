@@ -41,10 +41,10 @@ class DeclarationFonction:
 		self.listeInstructions = listeInstructions
 	def afficher(self, indent = 0):
 		afficher("<fonction>", indent)
-		self.type.afficher(indent+2)
+		afficher("["+self.type+"]", indent+2)
 		afficher("[nom :" + self.nom + "]", indent+2)
 		self.listeParametres.afficher(indent+2)
-		self.listeParametres.afficher(indent+2)
+		self.listeInstructions.afficher(indent+2)
 		afficher("</fonction>", indent)
 
 class Fonction:
@@ -73,7 +73,7 @@ class Parametre:
 		self.variable = variable
 	def afficher(self, indent = 0):
 		afficher("<parametre>", indent)
-		self.type.afficher(indent+1)
+		afficher("["+self.type+"]", indent+1)
 		self.variable.afficher(indent+1)
 		afficher("</parametre>", indent)
 

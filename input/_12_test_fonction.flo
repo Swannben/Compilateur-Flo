@@ -1,3 +1,12 @@
 entier ma_fonction(entier a) {
     ecrire(2);
 }
+
+entier ma_fonction2(entier b, entier c) {
+    ecrire(c);
+    retourner(b);
+}
+
+ecrire(1);
+
+
